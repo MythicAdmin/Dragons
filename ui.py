@@ -90,4 +90,3 @@ async def user_interface():
             HUB.light.on(Color.RED)
             HUB.display.char('E')
             await wait(10)
-    

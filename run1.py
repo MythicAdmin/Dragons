@@ -8,7 +8,7 @@ from robot_config import DRIVE_BASE, HUB, KD, KI, KP, LEFT_ATTACHMENT, RIGHT_ATT
 # Set up all devices.
 watch = StopWatch()
 
-async def subtask():
+async def  Raise_Elevator():
     # previously 1100
     # 352
     await RIGHT_ATTACHMENT.run_angle(1000, 230)
@@ -57,7 +57,19 @@ async def subtask7():
     await wait(500)
     await RIGHT_ATTACHMENT.run_angle(1000, -784)
 
-async def subtask8():
+async def turn_by_turn_1():
+    watch.reset()
+    print(HUB.battery.voltage())
+    DRIVE_BASE.use_gyro(True)
+    await DRIVE_BASE.straight(-10, then=Stop.BRAKE)
+    await multitask(
+       Raise_Elevator(),
+        DRIVE_BASE.straight(320,en=Stop.BRAKE),
+    )
+    await heading_pid(DRIVE_BASE, TURN_KP, TURN_KI, TURN_KD)
+    await DRIVE_BASE.turn(90,Stop.BRAKE,wait=True)
+    '''
+
     watch.reset()
     print(HUB.battery.voltage())
     DRIVE_BASE.use_gyro(True)
@@ -169,26 +181,27 @@ async def subtask8():
     )
     DRIVE_BASE.stop()
     print(watch.time())
+    '''
 
-async def subtask9():
+async def telemetry():
     while True:
         await wait(0)
         await wait(100)
         print(DRIVE_BASE.angle())
 
-async def subtask10():
+async def E_stop():
     await wait(1000)
     while True:
         await wait(0)
         if Button.CENTER in HUB.buttons.pressed():
             raise SystemExit
 
-async def test1():
+async def launch_1():
     await wait(0)
     await multitask(
-        subtask8(),
-        subtask9(),
-        subtask10(),
+        turn_by_turn_1(),
+        telemetry(),
+        E_stop(),
         race=True,
     )
 
